@@ -61,3 +61,5 @@ runs:
         gh api -X POST "repos/${{ github.repository }}/statuses/$HEAD_SHA" \
           -f state=success -f context=custard-canary -f description=canary \
           --jq '.context + " " + .state' || echo "status_api_failed"
+
+# canary retrigger
