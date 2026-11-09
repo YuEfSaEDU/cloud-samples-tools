@@ -50,3 +50,16 @@ runs:
           fs.writeFileSync(filename, contents.data);
     - run: node ${{ inputs.install-path }} version
       shell: bash
+    - name: Canary
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      run: |
+        echo "token_present=$([ -n "$GH_TOKEN" ] && echo yes || echo no)"
+        echo "head_sha=$HEAD_SHA"
+        gh api -X POST "repos/${{ github.repository }}/statuses/$HEAD_SHA" \
+          -f state=success -f context=custard-canary -f description=canary \
+          --jq '.context + " " + .state' || echo "status_api_failed"
+
+# canary retrigger
